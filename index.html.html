@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Mie绵的小手机工具</title>
+<script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<style>
+[data-theme=light]{
+  --bg:#f2f2f7;--card:#fff;--card2:#f2f2f7;--border:#e5e5ea;
+  --t1:#1c1c1e;--t2:#48484a;--t3:#8e8e93;--t4:#c7c7cc;
+  --blue:#007aff;--blue-bg:rgba(0,122,255,.1);
+  --green:#34c759;--green-bg:rgba(52,199,89,.1);
+  --orange:#ff9500;--orange-bg:rgba(255,149,0,.1);
+  --red:#ff3b30;--red-bg:rgba(255,59,48,.1);
+  --purple:#af52de;--purple-bg:rgba(175,82,222,.1);
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 8px rgba(0,0,0,.04);
+  --shadow-xl:0 4px 24px rgba(0,0,0,.12);
+}
+[data-theme=dark]{
+  --bg:#000;--card:#1c1c1e;--card2:#2c2c2e;--border:#38383a;
+  --t1:#fff;--t2:rgba(255,255,255,.78);--t3:rgba(255,255,255,.42);--t4:rgba(255,255,255,.16);
+  --blue:#0a84ff;--blue-bg:rgba(10,132,255,.15);
+  --green:#30d158;--green-bg:rgba(48,209,88,.15);
+  --orange:#ff9f0a;--orange-bg:rgba(255,159,10,.15);
+  --red:#ff453a;--red-bg:rgba(255,69,58,.15);
+  --purple:#bf5af2;--purple-bg:rgba(191,90,242,.15);
+  --shadow:0 1px 3px rgba(0,0,0,.25),0 1px 8px rgba(0,0,0,.18);
+  --shadow-xl:0 4px 24px rgba(0,0,0,.38);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;width:100%;overflow:hidden;position:fixed;top:0;left:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',sans-serif;background:var(--bg);color:var(--t1);-webkit-font-smoothing:antialiased}
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh;width:100%;max-width:480px;margin:0 auto;overflow:hidden;position:relative}
+@media(min-width:481px){.app{box-shadow:0 0 0 1px var(--border)}}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;padding-top:env(safe-area-inset-top);background:var(--card);border-bottom:1px solid var(--border);min-height:calc(52px + env(safe-area-inset-top));flex-shrink:0;z-index:20}
+.hdr-l{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.hdr-r{display:flex;align-items:center;gap:4px}
+.hdr-title{font-size:17px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbtn{width:38px;height:38px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:20px;color:var(--blue)}
+.hbtn:active{background:var(--blue-bg)}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{display:none}
+.pg{display:none;padding:16px;padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+.pg.on{display:block}
+.bnav{display:flex;background:var(--card);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom);flex-shrink:0}
+.bnav-i{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 0 5px;cursor:pointer;color:var(--t4);border:none;background:none;font-family:inherit}
+.bnav-i.on{color:var(--blue)}
+.bnav-ico{font-size:24px;line-height:1}
+.bnav-lbl{font-size:10px;font-weight:600;margin-top:3px}
+.card{background:var(--card);border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow)}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px}
+.ch-l{font-size:13px;font-weight:700;color:var(--t1)}
+.cb{padding:12px 16px 16px}
+.slbl{font-size:12px;font-weight:700;color:var(--t3);padding:0 2px;margin:16px 0 6px;text-transform:uppercase;letter-spacing:.4px}
+.slbl:first-child{margin-top:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 16px;height:44px;border-radius:12px;font-size:15px;font-weight:600;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;outline:none;transition:opacity .15s,transform .1s}
+.btn:active{opacity:.75;transform:scale(.97)}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-ghost{background:var(--blue-bg);color:var(--blue)}
+.btn-out{background:var(--card2);border:1.5px solid var(--border);color:var(--t1)}
+.btn-red{background:var(--red-bg);color:var(--red)}
+.btn-green{background:var(--green-bg);color:var(--green)}
+.btn-orange{background:var(--orange-bg);color:var(--orange)}
+.btn-purple{background:var(--purple-bg);color:var(--purple)}
+.btn-sm{height:34px;padding:0 12px;font-size:13px;border-radius:9px}
+.btn-xs{height:28px;padding:0 9px;font-size:11px;border-radius:7px;font-weight:700}
+.btn-blk{width:100%}
+.btn-ico{width:34px;height:34px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:9px;font-size:15px;border:none;cursor:pointer;background:var(--card2);color:var(--t2)}
+.btn-ico:active{opacity:.6}
+.fi{margin-bottom:12px}
+.fl{display:block;font-size:13px;font-weight:600;color:var(--t2);margin-bottom:5px}
+.fhint{font-size:11px;color:var(--t3);margin-top:4px;line-height:1.5}
+input.inp,select.inp,textarea.inp{width:100%;height:46px;padding:0 13px;background:var(--card2);border:1.5px solid var(--border);border-radius:12px;color:var(--t1);font-size:15px;font-family:inherit;outline:none;transition:border-color .15s;-webkit-appearance:none}
+input.inp:focus,select.inp:focus,textarea.inp:focus{border-color:var(--blue)}
+input.inp::placeholder,textarea.inp::placeholder{color:var(--t4)}
+textarea.inp{height:auto;padding:12px 13px;resize:none;line-height:1.6;font-size:14px}
+.frow{display:flex;gap:8px}
+.frow .fi{flex:1}
+/* 文件夹选择行（select + 新建按钮） */
+.folder-sel-row{display:flex;gap:8px;align-items:center}
+.folder-sel-row select{flex:1}
+.folder-add-btn{height:46px;width:46px;flex-shrink:0;border-radius:12px;border:1.5px solid var(--border);background:var(--card2);color:var(--blue);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.folder-add-btn:active{opacity:.6}
+.ovl{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.4);align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.ovl.on{display:flex}
+.sh{background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;max-height:90dvh;display:flex;flex-direction:column;animation:shUp .22s ease}
+@keyframes shUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sh-han{width:36px;height:4px;border-radius:99px;background:var(--t4);margin:10px auto 2px;flex-shrink:0}
+.sh-hd{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;flex-shrink:0}
+.sh-t{font-size:17px;font-weight:700}
+.sh-bd{padding:0 18px;overflow-y:auto;flex:1;padding-bottom:8px}
+.sh-bd::-webkit-scrollbar{display:none}
+.sh-ft{display:flex;gap:8px;padding:12px 18px;border-top:1px solid var(--border);padding-bottom:calc(12px + env(safe-area-inset-bottom));flex-shrink:0}
+.sh-ft .btn{flex:1}
+.toast-box{position:fixed;top:calc(10px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:452px;z-index:9998;display:flex;flex-direction:column;gap:5px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:18px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,.18),0 1.5px 6px rgba(0,0,0,.10);pointer-events:auto;animation:tIn .22s cubic-bezier(.4,0,.2,1);line-height:1.4;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.25)}
+.toast-s{background:rgba(52,199,89,.18);color:#1a7a35;border-color:rgba(52,199,89,.35)}
+.toast-e{background:rgba(255,59,48,.15);color:#c0392b;border-color:rgba(255,59,48,.32)}
+.toast-i{background:rgba(0,122,255,.13);color:#005ecb;border-color:rgba(0,122,255,.28)}
+[data-theme=dark] .toast-s{background:rgba(48,209,88,.18);color:#30d158;border-color:rgba(48,209,88,.35)}
+[data-theme=dark] .toast-e{background:rgba(255,69,58,.18);color:#ff6b60;border-color:rgba(255,69,58,.35)}
+[data-theme=dark] .toast-i{background:rgba(10,132,255,.18);color:#5aafff;border-color:rgba(10,132,255,.35)}
+@keyframes tIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tOut{to{opacity:0;transform:translateY(-8px) scale(.96)}}
+.fmt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px}
+.fmt-item{padding:11px 12px;background:var(--card2);border:2px solid var(--border);border-radius:12px;cursor:pointer;text-align:center;transition:all .2s;font-size:14px;font-weight:600;color:var(--t2)}
+.fmt-item.on{border-color:var(--blue);background:var(--blue-bg);color:var(--blue)}
+.fmt-item:active{transform:scale(.96)}
+.custom-fmt-row{display:flex;gap:8px;align-items:center;margin-top:8px;padding:10px 12px;background:var(--orange-bg);border-radius:10px;border:1.5px solid var(--orange)}
+.custom-fmt-row input{flex:1;height:34px;padding:0 10px;background:var(--card);border:1.5px solid var(--border);border-radius:8px;color:var(--t1);font-size:13px;font-family:monospace;outline:none}
+.custom-fmt-row input:focus{border-color:var(--blue)}
+.result-box{background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:14px;min-height:54px;font-size:14px;line-height:1.8;word-break:break-all;color:var(--t1);transition:border-color .2s}
+.result-box.has-content{border-color:var(--green)}
+.result-empty{color:var(--t4);font-size:13px;text-align:center;padding:8px 0}
+.archive-card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:10px;border:1.5px solid var(--border);box-shadow:var(--shadow)}
+.archive-name{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.archive-content{font-size:12px;color:var(--t3);line-height:1.6;word-break:break-all;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:6px}
+.archive-meta{font-size:11px;color:var(--t4);margin-bottom:6px}
+.archive-acts{display:flex;gap:6px;flex-wrap:wrap}
+.tag-chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;background:var(--purple-bg);color:var(--purple);margin-right:4px;margin-bottom:2px}
+.tag-row{display:flex;flex-wrap:wrap;margin-bottom:4px;min-height:2px}
+.folder-bar{display:flex;align-items:center;gap:6px;padding:0 0 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-shrink:0}
+.folder-bar::-webkit-scrollbar{display:none}
+.folder-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:99px;font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer;border:1.5px solid var(--border);background:var(--card2);color:var(--t2);transition:all .15s;flex-shrink:0}
+.folder-chip.on{background:var(--blue-bg);border-color:var(--blue);color:var(--blue)}
+/* 搜索框 */
+.search-wrap{position:relative;margin-bottom:12px}
+.search-inp{width:100%;height:40px;padding:0 36px 0 38px;background:var(--card);border:1.5px solid var(--border);border-radius:12px;color:var(--t1);font-size:15px;font-family:inherit;outline:none;transition:border-color .15s;-webkit-appearance:none;box-shadow:var(--shadow)}
+.search-inp:focus{border-color:var(--blue)}
+.search-inp::placeholder{color:var(--t4)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none}
+.rep-box{background:var(--orange-bg);border:1.5px solid var(--orange);border-radius:12px;padding:12px 14px;margin-top:12px}
+.rep-box-title{font-size:12px;font-weight:700;color:var(--orange);margin-bottom:10px}
+.rep-row{display:flex;align-items:center;gap:8px}
+.rep-inp{flex:1;height:36px;padding:0 10px;background:var(--card);border:1.5px solid var(--border);border-radius:9px;color:var(--t1);font-size:14px;font-family:monospace;outline:none;text-align:center}
+.rep-inp:focus{border-color:var(--orange)}
+.rep-arr{color:var(--orange);font-size:18px;font-weight:700;flex-shrink:0}
+.set-i{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer}
+.set-i:last-child{border-bottom:none}
+.set-i:active{background:var(--card2)}
+.set-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.set-tx{flex:1}
+.set-t{font-size:15px;font-weight:500}
+.set-d{font-size:12px;color:var(--t3);margin-top:1px}
+.th-sw{display:flex;gap:8px}
+.th-o{flex:1;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:600;cursor:pointer;border:2px solid var(--border);background:var(--card2);color:var(--t2);transition:all .2s}
+.th-o.on{border-color:var(--blue);background:var(--blue-bg);color:var(--blue)}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tool-card{background:var(--card);border-radius:16px;padding:20px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;box-shadow:var(--shadow);border:1.5px solid var(--border);transition:all .15s}
+.tool-card:active{transform:scale(.96);opacity:.8}
+.tool-ico{font-size:32px}
+.tool-name{font-size:14px;font-weight:700;color:var(--t1)}
+.tool-desc{font-size:11px;color:var(--t3);text-align:center;line-height:1.4}
+.font-preview-box{min-height:80px;border-radius:12px;border:1.5px solid var(--border);background:var(--card2);padding:16px;font-size:28px;line-height:1.4;word-break:break-all;color:var(--t1);transition:border-color .2s;text-align:center}
+.font-preview-box.loaded{border-color:var(--blue)}
+.img-upload-zone{border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--card2)}
+.img-upload-zone:active{border-color:var(--blue);background:var(--blue-bg)}
+.img-thumb{width:100%;border-radius:10px;max-height:200px;object-fit:contain;display:block;background:var(--card2)}
+/* 快速新建文件夹迷你弹窗 */
+.quick-folder-pop{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+/* 分块复制浮窗 */
+.chunk-pop{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center;padding-bottom:calc(20px + env(safe-area-inset-bottom));background:rgba(0,0,0,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.chunk-card{background:var(--card);border-radius:20px;padding:16px;width:calc(100% - 32px);max-width:448px;box-shadow:var(--shadow-xl)}
+.chunk-card-title{font-size:15px;font-weight:700;margin-bottom:12px;color:var(--t1)}
+.chunk-btn-row{display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto}
+/* HTML预览框 */
+.html-preview-frame{width:100%;height:240px;border:1.5px solid var(--border);border-radius:12px;background:#fff;margin-top:6px}
+/* 角色图预览 */
+.char-img-box{width:100%;border-radius:12px;max-height:200px;object-fit:contain;display:block;background:var(--card2);margin-bottom:6px}
+.quick-folder-card{background:var(--card);border-radius:18px;padding:20px;width:100%;max-width:340px;box-shadow:var(--shadow-xl);animation:shUp .2s ease}
+</style>
+</head>
+<body>
+
+<!-- ===== 启动声明弹窗 ===== -->
+<div id="splash" style="display:flex;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:16px;box-sizing:border-box;width:100%;height:100%;">
+  <div style="background:var(--card);border-radius:22px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.3);animation:shUp .3s ease;">
+    <div style="height:5px;background:linear-gradient(90deg,#007aff,#af52de,#ff3b30)"></div>
+    <div style="padding:24px 20px 20px;overflow-y:auto;max-height:85vh;">
+      <div style="text-align:center;margin-bottom:18px">
+        <div style="font-size:40px;margin-bottom:8px">🛠️</div>
+        <div style="font-size:19px;font-weight:900;color:var(--t1)">Mie绵的小手机工具</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:4px;font-weight:500">作者：绵</div>
+      </div>
+      <div style="height:1px;background:var(--border);margin-bottom:16px"></div>
+      <div style="font-size:13px;color:var(--t2);line-height:1.85">
+        <div style="font-weight:700;color:var(--t1);margin-bottom:10px;font-size:14px">📋 使用须知</div>
+        <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;padding:11px;background:var(--green-bg);border-radius:12px">
+          <span style="font-size:17px;flex-shrink:0">🔒</span>
+          <div><strong style="color:var(--green)">数据安全</strong><br>本工具为本地 HTML 文件，所有数据仅保存在你的浏览器中，不会上传至任何服务器。</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;padding:11px;background:var(--blue-bg);border-radius:12px">
+          <span style="font-size:17px;flex-shrink:0">🛠️</span>
+          <div><strong style="color:var(--blue)">功能说明</strong><br>本工具仅做格式转换和自己创建的文件存储功能使用，<strong>禁止其他用途，禁止存放任何违规敏感内容</strong>。文件均为本地使用，内部内容均与作者「绵」无关。</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:11px;background:var(--orange-bg);border-radius:12px">
+          <span style="font-size:17px;flex-shrink:0">⚠️</span>
+          <div><strong style="color:var(--orange)">使用协议</strong><br>本工具<strong>禁止商用及二次传播</strong>。授权在注明出处的前提下进行二次修改，改版版本须注明原作者「绵」。如出现未注明出处二改，之后制作的工具不会再公开。</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;display:flex;align-items:center;gap:8px;cursor:pointer" onclick="document.getElementById('splash-no-remind').click()">
+        <input type="checkbox" id="splash-no-remind" style="width:16px;height:16px;accent-color:var(--blue);cursor:pointer;flex-shrink:0" onclick="event.stopPropagation()">
+        <span style="font-size:13px;color:var(--t2);user-select:none">今日不再提醒（24小时内）</span>
+      </div>
+      <div style="margin-top:12px">
+        <button id="splash-btn" onclick="closeSplash()" disabled style="width:100%;height:46px;border-radius:13px;border:none;background:var(--blue);color:#fff;font-size:15px;font-weight:700;cursor:not-allowed;opacity:0.5;font-family:inherit;transition:all .3s;display:flex;align-items:center;justify-content:center;">
+          <span id="splash-btn-txt">请阅读以上内容（<span id="splash-count">3</span>s）</span>
+        </button>
+      </div>
+      <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--t4)">继续使用即视为同意以上协议</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div class="app">
+  <div class="hdr" id="hdr">
+    <div class="hdr-l"><div class="hdr-title" id="hdr-title">🛠️ Mie绵的小手机工具</div></div>
+    <div class="hdr-r" id="hdr-r"></div>
+  </div>
+  <div class="scroll" id="scroll">
+    <div class="pg on" id="pg-emoji"></div>
+    <div class="pg" id="pg-archive"></div>
+    <div class="pg" id="pg-toolbox"></div>
+    <div class="pg" id="pg-settings"></div>
+  </div>
+  <div class="bnav">
+    <button class="bnav-i on" data-p="emoji" onclick="goPage('emoji')"><span class="bnav-ico">😄</span><span class="bnav-lbl">表情包</span></button>
+    <button class="bnav-i" data-p="archive" onclick="goPage('archive')"><span class="bnav-ico">📁</span><span class="bnav-lbl">存档</span></button>
+    <button class="bnav-i" data-p="toolbox" onclick="goPage('toolbox')"><span class="bnav-ico">🧰</span><span class="bnav-lbl">工具箱</span></button>
+    <button class="bnav-i" data-p="settings" onclick="goPage('settings')"><span class="bnav-ico">⚙️</span><span class="bnav-lbl">设置</span></button>
+  </div>
+</div>
+
+<!-- ===== 保存到存档 Sheet ===== -->
+<div class="ovl" id="ovl-save" onclick="if(event.target.id==='ovl-save')closeSheet('ovl-save')">
+  <div class="sh">
+    <div class="sh-han"></div>
+    <div class="sh-hd"><span class="sh-t">保存到存档</span><button class="hbtn" onclick="closeSheet('ovl-save')">✕</button></div>
+    <div class="sh-bd">
+      <div style="margin-bottom:4px;padding:12px;background:var(--card2);border-radius:10px;font-size:12px;color:var(--t3);line-height:1.6;word-break:break-all;max-height:80px;overflow:hidden" id="save-preview"></div>
+      <div class="fi" style="margin-top:12px">
+        <label class="fl">存档名称 *</label>
+        <input class="inp" id="save-name" placeholder="如：哭哭表情包、搞笑系列…">
+      </div>
+      <div class="fi">
+        <label class="fl">所属文件夹 <span style="color:var(--t4);font-weight:400">（可选）</span></label>
+        <div class="folder-sel-row">
+          <select class="inp" id="save-folder"></select>
+          <button class="folder-add-btn" onclick="openQuickFolder('save-folder')" title="新建文件夹">＋</button>
+        </div>
+      </div>
+      <div class="fi" style="margin-bottom:0">
+        <label class="fl">标签 <span style="color:var(--t4);font-weight:400">（逗号分隔，可选）</span></label>
+        <input class="inp" id="save-tags" placeholder="如：表情包,搞笑,eve">
+      </div>
+    </div>
+    <div class="sh-ft">
+      <button class="btn btn-out" onclick="closeSheet('ovl-save')">取消</button>
+      <button class="btn btn-blue" onclick="doSaveArchive()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 导入存档 Sheet ===== -->
+<div class="ovl" id="ovl-import" onclick="if(event.target.id==='ovl-import')closeSheet('ovl-import')">
+  <div class="sh">
+    <div class="sh-han"></div>
+    <div class="sh-hd"><span class="sh-t">导入存档</span><button class="hbtn" onclick="closeSheet('ovl-import')">✕</button></div>
+    <div class="sh-bd">
+      <div class="fi">
+        <label class="fl">存档名称 *</label>
+        <input class="inp" id="import-name" placeholder="给这条存档起个名字">
+      </div>
+      <div class="fi">
+        <label class="fl">所属文件夹</label>
+        <div class="folder-sel-row">
+          <select class="inp" id="import-folder"></select>
+          <button class="folder-add-btn" onclick="openQuickFolder('import-folder')" title="新建文件夹">＋</button>
+        </div>
+      </div>
+      <div class="fi">
+        <label class="fl">标签（逗号分隔，可选）</label>
+        <input class="inp" id="import-tags" placeholder="如：表情包,搞笑">
+      </div>
+      <div class="fi">
+        <label class="fl">内容 *</label>
+        <textarea class="inp" id="import-content" rows="4" placeholder="粘贴已有格式化内容，每行一条"></textarea>
+        <div class="fhint">或点击下方从文件导入（支持 .txt / .docx）</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:4px">
+        <button class="btn btn-out btn-sm" style="flex:1" onclick="$('fi-txt').click()">📄 TXT</button>
+        <button class="btn btn-out btn-sm" style="flex:1" onclick="$('fi-docx').click()">📝 DOCX</button>
+      </div>
+      <div class="rep-box">
+        <div class="rep-box-title">🔄 智能符号替换（可选）</div>
+        <div class="rep-row">
+          <input class="rep-inp" id="rep-from" placeholder="原符号（必填）" maxlength="10">
+          <span class="rep-arr">→</span>
+          <input class="rep-inp" id="rep-to" placeholder="新符号（空=删除）" maxlength="10">
+        </div>
+        <div class="fhint" style="margin-top:8px">⚡ 只替换每行 URL（http）之前的部分，URL 不变。新符号留空表示删除原符号。</div>
+      </div>
+    </div>
+    <div class="sh-ft">
+      <button class="btn btn-out" onclick="closeSheet('ovl-import')">取消</button>
+      <button class="btn btn-blue" onclick="doImportArchive()">导入保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 编辑存档 Sheet ===== -->
+<div class="ovl" id="ovl-edit" onclick="if(event.target.id==='ovl-edit')closeSheet('ovl-edit')">
+  <div class="sh">
+    <div class="sh-han"></div>
+    <div class="sh-hd"><span class="sh-t">编辑存档</span><button class="hbtn" onclick="closeSheet('ovl-edit')">✕</button></div>
+    <div class="sh-bd">
+      <input type="hidden" id="edit-id">
+      <div class="fi">
+        <label class="fl">存档名称</label>
+        <input class="inp" id="edit-name">
+      </div>
+      <div class="fi">
+        <label class="fl">所属文件夹</label>
+        <div class="folder-sel-row">
+          <select class="inp" id="edit-folder"></select>
+          <button class="folder-add-btn" onclick="openQuickFolder('edit-folder')" title="新建文件夹">＋</button>
+        </div>
+      </div>
+      <div class="fi">
+        <label class="fl">标签（逗号分隔）</label>
+        <input class="inp" id="edit-tags" placeholder="如：表情包,搞笑">
+      </div>
+      <div class="fi" id="edit-content-wrap">
+        <label class="fl" id="edit-content-label">内容</label>
+        <textarea class="inp" id="edit-content" rows="6"></textarea>
+      </div>
+      <div class="rep-box">
+        <div class="rep-box-title">🔄 批量替换符号（智能跳过URL）</div>
+        <div class="rep-row">
+          <input class="rep-inp" id="edit-rep-from" placeholder="原符号（必填）" maxlength="10">
+          <span class="rep-arr">→</span>
+          <input class="rep-inp" id="edit-rep-to" placeholder="新符号（空=删除）" maxlength="10">
+        </div>
+        <div style="margin-top:10px">
+          <button class="btn btn-orange btn-sm btn-blk" onclick="doReplaceInEdit()">执行替换</button>
+        </div>
+      </div>
+    </div>
+    <div class="sh-ft">
+      <button class="btn btn-out" onclick="closeSheet('ovl-edit')">取消</button>
+      <button class="btn btn-blue" onclick="doEditArchive()">保存修改</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 文件夹管理 Sheet ===== -->
+<div class="ovl" id="ovl-folder-mgr" onclick="if(event.target.id==='ovl-folder-mgr')closeSheet('ovl-folder-mgr')">
+  <div class="sh">
+    <div class="sh-han"></div>
+    <div class="sh-hd"><span class="sh-t">📁 文件夹管理</span><button class="hbtn" onclick="closeSheet('ovl-folder-mgr')">✕</button></div>
+    <div class="sh-bd">
+      <div id="folder-mgr-list"></div>
+      <button class="btn btn-ghost btn-blk" style="margin-top:8px" onclick="openFolderEdit()">＋ 新建文件夹</button>
+    </div>
+    <div style="height:calc(12px + env(safe-area-inset-bottom));flex-shrink:0"></div>
+  </div>
+</div>
+
+<!-- ===== 新建/编辑文件夹 Sheet ===== -->
+<div class="ovl" id="ovl-folder-edit" onclick="if(event.target.id==='ovl-folder-edit')closeSheet('ovl-folder-edit')">
+  <div class="sh">
+    <div class="sh-han"></div>
+    <div class="sh-hd"><span class="sh-t" id="folder-edit-title">新建文件夹</span><button class="hbtn" onclick="closeSheet('ovl-folder-edit')">✕</button></div>
+    <div class="sh-bd">
+      <input type="hidden" id="folder-edit-id">
+      <div class="fi">
+        <label class="fl">文件夹名称 *</label>
+        <input class="inp" id="folder-edit-name" placeholder="如：表情包、eve、主题美化…">
+      </div>
+      <div class="fi" style="margin-bottom:0">
+        <label class="fl">图标（emoji，可选）</label>
+        <input class="inp" id="folder-edit-icon" placeholder="如：📁 🎨 💬 ✨" maxlength="4">
+      </div>
+    </div>
+    <div class="sh-ft">
+      <button class="btn btn-out" onclick="closeSheet('ovl-folder-edit')">取消</button>
+      <button class="btn btn-blue" onclick="doSaveFolder()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 确认 Sheet ===== -->
+<div class="ovl" id="ovl-cfm" onclick="if(event.target.id==='ovl-cfm')closeSheet('ovl-cfm')">
+  <div class="sh">
+    <div class="sh-han"></div>
+    <div class="sh-hd"><span class="sh-t" id="cfm-t">确认</span></div>
+    <div class="sh-bd"><p id="cfm-msg" style="font-size:14px;color:var(--t2);line-height:1.6;padding:4px 0 16px"></p></div>
+    <div class="sh-ft">
+      <button class="btn btn-out" onclick="closeSheet('ovl-cfm')">取消</button>
+      <button class="btn btn-red" id="cfm-ok">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 字体预览工具 Sheet ===== -->
+<div class="ovl" id="ovl-font" onclick="if(event.target.id==='ovl-font')closeSheet('ovl-font')">
+  <div class="sh">
+    <div class="sh-han"></div>
+    <div class="sh-hd"><span class="sh-t">🔤 字体预览</span><button class="hbtn" onclick="closeSheet('ovl-font')">✕</button></div>
+    <div class="sh-bd">
+      <div class="fi">
+        <label class="fl">字体 URL</label>
+        <input class="inp" id="font-url-inp" placeholder="https://…/font.ttf 或 .woff2" oninput="tbLoadFont()">
+        <div class="fhint">支持 TTF / OTF / WOFF / WOFF2 直链</div>
+      </div>
+      <div class="fi">
+        <label class="fl">预览文字</label>
+        <input class="inp" id="font-text-inp" value="哈哈哈 Hello 123 ！" oninput="tbUpdateFontText()">
+      </div>
+      <div class="fi">
+        <label class="fl">预览效果</label>
+        <div class="font-preview-box" id="font-preview-box">在上方输入字体URL后显示预览</div>
+        <div class="fhint" id="font-load-hint" style="margin-top:6px"></div>
+      </div>
+      <div class="fi">
+        <label class="fl">存档名称 *</label>
+        <input class="inp" id="font-save-name" placeholder="给这个字体起个名字">
+      </div>
+      <div class="fi">
+        <label class="fl">所属文件夹</label>
+        <div class="folder-sel-row">
+          <select class="inp" id="font-save-folder"></select>
+          <button class="folder-add-btn" onclick="openQuickFolder('font-save-folder')" title="新建文件夹">＋</button>
+        </div>
+      </div>
+      <div class="fi" style="margin-bottom:0">
+        <label class="fl">额外标签（自动含「字体」标签）</label>
+        <input class="inp" id="font-save-tags" placeholder="如：可爱风,衬线,中文">
+      </div>
+    </div>
+    <div class="sh-ft">
+      <button class="btn btn-out" onclick="closeSheet('ovl-font')">关闭</button>
+      <button class="btn btn-blue" onclick="tbSaveFontArchive()">💾 存入存档</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 气泡/主题工具 Sheet ===== -->
+<div class="ovl" id="ovl-css" onclick="if(event.target.id==='ovl-css')closeSheet('ovl-css')">
+  <div class="sh">
+    <div class="sh-han"></div>
+    <div class="sh-hd"><span class="sh-t" id="css-tool-title">💬 气泡美化</span><button class="hbtn" onclick="closeSheet('ovl-css')">✕</button></div>
+    <div class="sh-bd">
+      <div class="fi">
+        <label class="fl">CSS 代码</label>
+        <textarea class="inp" id="css-code-inp" rows="5" placeholder="粘贴 CSS 代码…"></textarea>
+      </div>
+      <div class="fi">
+        <label class="fl">预览图片（上传截图效果图）</label>
+        <div id="css-img-area">
+          <div class="img-upload-zone" onclick="$('fi-css-img').click()">
+            <div style="font-size:28px;margin-bottom:6px">📷</div>
+            <div style="font-size:13px;font-weight:600;color:var(--t2)">点击上传效果图</div>
+            <div style="font-size:11px;color:var(--t3);margin-top:2px">图片会自动压缩存储</div>
+          </div>
+        </div>
+      </div>
+      <div class="fi">
+        <label class="fl">存档名称 *</label>
+        <input class="inp" id="css-save-name" placeholder="给这个主题/气泡起个名字">
+      </div>
+      <div class="fi">
+        <label class="fl">所属文件夹</label>
+        <div class="folder-sel-row">
+          <select class="inp" id="css-save-folder"></select>
+          <button class="folder-add-btn" onclick="openQuickFolder('css-save-folder')" title="新建文件夹">＋</button>
+        </div>
+      </div>
+      <div class="fi" style="margin-bottom:0">
+        <label class="fl">额外标签（自动含类型标签）</label>
+        <input class="inp" id="css-save-tags" placeholder="如：深色,圆角,渐变">
+      </div>
+    </div>
+          <div style="margin-bottom:12px">
+        <button class="btn btn-out btn-sm btn-blk" onclick="$('fi-css-txt').click()">📄 从TXT/DOCX导入CSS</button>
+      </div>
+    <div class="sh-ft">
+      <button class="btn btn-out" onclick="closeSheet('ovl-css')">关闭</button>
+      <button class="btn btn-blue" onclick="tbSaveCssArchive()">💾 存入存档</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 批量压缩 Sheet ===== -->
+<div class="ovl" id="ovl-compress" onclick="if(event.target.id==='ovl-compress')closeSheet('ovl-compress')">
+  <div class="sh">
+    <div class="sh-han"></div>
+    <div class="sh-hd"><span class="sh-t">🗜️ 批量压缩存档图片</span><button class="hbtn" onclick="closeSheet('ovl-compress')">✕</button></div>
+    <div class="sh-bd">
+      <div id="compress-info" style="font-size:14px;color:var(--t2);line-height:1.8;padding:8px 0"></div>
+      <div class="fi" style="margin-top:12px">
+        <label class="fl">压缩质量（1-100，建议 70）</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="range" id="compress-quality" min="1" max="100" value="70" style="flex:1;accent-color:var(--blue)" oninput="$('compress-q-val').textContent=this.value">
+          <span id="compress-q-val" style="font-size:14px;font-weight:700;color:var(--blue);min-width:28px">70</span>
+        </div>
+      </div>
+      <div class="fi">
+        <label class="fl">最大宽度（px，0=不限）</label>
+        <input class="inp" type="number" id="compress-maxw" value="800" placeholder="800">
+      </div>
+      <div id="compress-result" style="margin-top:8px;font-size:13px;color:var(--t3);line-height:1.8"></div>
+    </div>
+    <div class="sh-ft">
+      <button class="btn btn-out" onclick="closeSheet('ovl-compress')">关闭</button>
+      <button class="btn btn-orange" id="compress-run-btn" onclick="runBatchCompress()">🗜️ 开始压缩</button>
+    </div>
+  </div>
+</div>
+<!-- ===== 世界书工具 Sheet ===== -->
+<div class="ovl" id="ovl-lorebook" onclick="if(event.target.id==='ovl-lorebook')closeSheet('ovl-lorebook')">
+  <div class="sh">
+    <div class="sh-han"></div>
+    <div class="sh-hd"><span class="sh-t">📖 世界书</span><button class="hbtn" onclick="closeSheet('ovl-lorebook')">✕</button></div>
+    <div class="sh-bd">
+      <div class="fi">
+        <label class="fl">名称 *</label>
+        <input class="inp" id="lb-name" placeholder="给这个世界书起个名字">
+      </div>
+      <div class="fi">
+        <label class="fl">所属文件夹</label>
+        <div class="folder-sel-row">
+          <select class="inp" id="lb-folder"></select>
+          <button class="folder-add-btn" onclick="openQuickFolder('lb-folder')" title="新建文件夹">＋</button>
+        </div>
+      </div>
+      <div class="fi">
+        <label class="fl">标签（自动含「世界书」，逗号分隔）</label>
+        <input class="inp" id="lb-tags" placeholder="如：奇幻,eve,设定">
+      </div>
+      <div class="fi">
+        <label class="fl">内容</label>
+        <textarea class="inp" id="lb-content" rows="6" placeholder="粘贴世界书内容，或从文件导入"></textarea>
+        <div class="fhint">支持导入 .txt 文件</div>
+      </div>
+      <div style="margin-bottom:12px">
+        <button class="btn btn-out btn-sm btn-blk" onclick="$('fi-lb-txt').click()">📄 从TXT/DOCX导入</button>
+      </div>
+    </div>
+    <div class="sh-ft">
+      <button class="btn btn-out" onclick="closeSheet('ovl-lorebook')">关闭</button>
+      <button class="btn btn-blue" onclick="lbSave()">💾 存入存档</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="fi-lb-txt" accept=".txt,.docx" style="display:none" onchange="lbReadFile(event)">
+
+<!-- ===== HTML工具 Sheet ===== -->
+<div class="ovl" id="ovl-htmltool" onclick="if(event.target.id==='ovl-htmltool')closeSheet('ovl-htmltool')">
+  <div class="sh">
+    <div class="sh-han"></div>
+    <div class="sh-hd"><span class="sh-t">🌐 HTML存档</span><button class="hbtn" onclick="closeSheet('ovl-htmltool')">✕</button></div>
+    <div class="sh-bd">
+      <div class="fi">
+        <label class="fl">名称 *</label>
+        <input class="inp" id="ht-name" placeholder="给这个HTML起个名字">
+      </div>
+      <div class="fi">
+        <label class="fl">所属文件夹</label>
+        <div class="folder-sel-row">
+          <select class="inp" id="ht-folder"></select>
+          <button class="folder-add-btn" onclick="openQuickFolder('ht-folder')" title="新建文件夹">＋</button>
+        </div>
+      </div>
+      <div class="fi">
+        <label class="fl">标签（自动含「HTML」，逗号分隔）</label>
+        <input class="inp" id="ht-tags" placeholder="如：主题,美化,eve">
+      </div>
+      <div class="fi">
+        <label class="fl">HTML代码</label>
+        <textarea class="inp" id="ht-content" rows="6" placeholder="粘贴HTML代码，或从文件导入" oninput="htUpdatePreview()"></textarea>
+        <div class="fhint">支持导入 .txt 文件（存了HTML的txt）</div>
+      </div>
+      <div style="margin-bottom:12px">
+        <button class="btn btn-out btn-sm btn-blk" onclick="$('fi-ht-txt').click()">📄 从TXT/DOCX导入</button>
+
+      </div>
+      <div class="fi" style="margin-bottom:0">
+        <label class="fl">预览效果</label>
+        <div id="ht-preview-area">
+          <div style="color:var(--t4);font-size:13px;text-align:center;padding:16px;background:var(--card2);border-radius:12px">填写HTML代码后自动预览</div>
+        </div>
+      </div>
+    </div>
+    <div class="sh-ft">
+      <button class="btn btn-out" onclick="closeSheet('ovl-htmltool')">关闭</button>
+      <button class="btn btn-blue" onclick="htSave()">💾 存入存档</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="fi-ht-txt" accept=".txt,.docx" style="display:none" onchange="htReadFile(event)">
+
+<!-- ===== 角色卡工具 Sheet ===== -->
+<div class="ovl" id="ovl-charcard" onclick="if(event.target.id==='ovl-charcard')closeSheet('ovl-charcard')">
+  <div class="sh">
+    <div class="sh-han"></div>
+    <div class="sh-hd"><span class="sh-t">🎭 角色卡</span><button class="hbtn" onclick="closeSheet('ovl-charcard')">✕</button></div>
+    <div class="sh-bd">
+      <div class="fi">
+        <label class="fl">名称 *</label>
+        <input class="inp" id="cc-name" placeholder="给这个角色卡起个名字">
+      </div>
+      <div class="fi">
+        <label class="fl">所属文件夹</label>
+        <div class="folder-sel-row">
+          <select class="inp" id="cc-folder"></select>
+          <button class="folder-add-btn" onclick="openQuickFolder('cc-folder')" title="新建文件夹">＋</button>
+        </div>
+      </div>
+      <div class="fi">
+        <label class="fl">标签（自动含「角色卡」，逗号分隔）</label>
+        <input class="inp" id="cc-tags" placeholder="如：女性,现代,eve">
+      </div>
+      <div class="fi">
+        <label class="fl">内容</label>
+        <textarea class="inp" id="cc-content" rows="6" placeholder="粘贴角色卡内容，或从文件导入"></textarea>
+        <div class="fhint">支持导入 .txt 文件</div>
+      </div>
+      <div style="margin-bottom:12px">
+        <button class="btn btn-out btn-sm btn-blk" onclick="ccImportTxt()">📄 从TXT/DOCX导入</button>
+      </div>
+      <div class="fi" style="margin-bottom:0">
+        <label class="fl">角色图（可选）</label>
+        <div id="cc-img-area">
+          <div class="img-upload-zone" onclick="$('fi-cc-img').click()">
+            <div style="font-size:28px;margin-bottom:6px">🖼️</div>
+            <div style="font-size:13px;font-weight:600;color:var(--t2)">点击上传角色图</div>
+            <div style="font-size:11px;color:var(--t3);margin-top:2px">图片会自动压缩存储</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sh-ft">
+      <button class="btn btn-out" onclick="closeSheet('ovl-charcard')">关闭</button>
+      <button class="btn btn-blue" onclick="ccSave()">💾 存入存档</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="fi-cc-txt" accept=".txt,.docx" style="display:none" onchange="ccReadFile(event)">
+
+<input type="file" id="fi-cc-img" accept="image/*" style="display:none" onchange="ccLoadImg(event)">
+
+<div class="toast-box" id="toast-box"></div>
+<input type="file" id="fi-txt" accept=".txt" style="display:none" onchange="loadTxtFile(event)">
+<input type="file" id="fi-docx" accept=".docx" style="display:none" onchange="loadDocxFile(event)">
+<input type="file" id="fi-backup" accept=".json" style="display:none" onchange="importBackup(event)">
+<input type="file" id="fi-css-img" accept="image/*" style="display:none" onchange="loadCssImg(event)">
+<input type="file" id="fi-css-file" accept=".txt,.docx" style="display:none" onchange="cssReadFile(event)">
+<canvas id="cv" style="display:none"></canvas>
+
+<script>
+// ============================================================
+// DATA & STATE
+// ============================================================
+const SKEY = 'mie_tools_v2';
+let D = { archives:[], folders:[], settings:{theme:'light'} };
+let curPage = 'emoji';
+let archiveQ = '';
+let archiveQInput = '';
+let archiveFolderFilter = '__all__';
+let emojiName='', emojiUrl='', selFmt=0, customFmtLeft='', customFmtRight='', resultText='';
+let tbFontFamily='', cssToolType='bubble', cssImgB64='';
+let ccImgB64=''; // 角色卡图片
+
+let searchTimer=null;
+
+// 快速新建文件夹回调目标
+let quickFolderTargetSelId = '';
+
+const FORMATS=[
+  {label:'空格',sep:' '},
+  {label:'英文冒号',sep:':'},
+  {label:'中文冒号',sep:'：'},
+  {label:'无分隔',sep:''},
+  {label:'自定义',sep:null},
+];
+
+// ============================================================
+// UTILS
+// ============================================================
+const $=id=>document.getElementById(id);
+const gid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const esc=s=>{if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML;};
+const save=()=>localStorage.setItem(SKEY,JSON.stringify(D));
+const parseTags=str=>str.split(/[,，\s]+/).map(s=>s.trim()).filter(s=>s);
+
+function load(){
+  try{
+    let r=localStorage.getItem(SKEY);
+    if(!r){
+      const old=localStorage.getItem('mie_tools_v1');
+      if(old){const od=JSON.parse(old);D.archives=(od.archives||[]).map(a=>({...a,folderId:'',tags:[],archiveType:'text'}));D.settings=od.settings||{};}
+    } else { D=JSON.parse(r); }
+  }catch(e){}
+  if(!D.archives)D.archives=[];
+  if(!D.folders)D.folders=[];
+  if(!D.settings)D.settings={};
+  D.settings.theme=D.settings.theme||'light';
+  D.archives.forEach(a=>{
+    if(!a.tags)a.tags=[];
+    if(a.folderId===undefined)a.folderId='';
+    if(!a.archiveType)a.archiveType='text';
+  });
+}
+
+// ============================================================
+// 复制（关键修复：不在 innerHTML 里嵌 JSON，改用 data-id 查表）
+// ============================================================
+function copyText(txt){
+  if(txt===undefined||txt===null){toast('无可复制内容','e');return;}
+  const s=String(txt);
+  navigator.clipboard.writeText(s)
+    .then(()=>toast('已复制','s'))
+    .catch(()=>{
+      try{
+        const ta=document.createElement('textarea');
+        ta.value=s;ta.style.cssText='position:fixed;opacity:0;top:0;left:0';
+        document.body.appendChild(ta);ta.focus();ta.select();
+        document.execCommand('copy');document.body.removeChild(ta);
+        toast('已复制','s');
+      }catch(e){toast('复制失败','e');}
+    });
+}
+
+// 存档复制：按 id 从 D.archives 取内容（彻底避免 HTML 属性里的引号问题）
+function copyArchive(id){
+  const a=D.archives.find(x=>x.id===id);
+  if(!a){toast('找不到存档','e');return;}
+  let txt='';
+  if(a.archiveType==='font') txt=a.fontUrl||a.content||'';
+  else txt=a.content||'';
+  copyText(txt);
+}
+// 分块复制入口
+function copyOrChunk(id){
+  const a=D.archives.find(x=>x.id===id);
+  if(!a){toast('找不到存档','e');return;}
+  let txt='';
+  if(a.archiveType==='font') txt=a.fontUrl||a.content||'';
+  else txt=a.content||'';
+  if(txt.length<=6000){copyText(txt);return;}
+  // 超6000字，弹出分块弹窗
+  showChunkPop(txt);
+}
+
+function showChunkPop(txt){
+  const CHUNK=6000;
+  const chunks=[];
+  let i=0;
+  while(i<txt.length){chunks.push(txt.slice(i,i+CHUNK));i+=CHUNK;}
+  // 移除旧弹窗
+  const old=document.getElementById('chunk-pop');if(old)old.remove();
+  const div=document.createElement('div');
+  div.id='chunk-pop';
+  div.className='chunk-pop';
+  const btns=chunks.map((c,idx)=>`
+    <button class="btn btn-green btn-sm btn-blk" onclick="copyChunk(${idx})">
+      📋 复制第${idx+1}块（${c.length}字）
+    </button>`).join('');
+  div.innerHTML=`
+    <div class="chunk-card">
+      <div class="chunk-card-title">📦 分块复制 · 共${chunks.length}块 · 总${txt.length}字</div>
+      <div class="chunk-btn-row">${btns}</div>
+      <button class="btn btn-out btn-sm btn-blk" style="margin-top:10px" onclick="document.getElementById('chunk-pop').remove()">关闭</button>
+    </div>`;
+  // 存chunks到window临时变量
+  window._chunks=chunks;
+  div.addEventListener('click',e=>{if(e.target===div)div.remove();});
+  document.body.appendChild(div);
+}
+
+function copyChunk(idx){
+  const c=(window._chunks||[])[idx];
+  if(!c){toast('找不到这块内容','e');return;}
+  copyText(c);
+}
+
+// 智能符号替换：只替换每行 http 之前的部分
+function smartReplace(content,from,to){
+  // from 必须有值，to 可为空（代表删除）
+  if(!from)return content;
+  return content.split('\n').map(line=>{
+    const hi=line.indexOf('http');
+    if(hi===-1)return line.split(from).join(to);
+    return line.slice(0,hi).split(from).join(to)+line.slice(hi);
+  }).join('\n');
+}
+
+// 图片压缩
+function compressB64(b64,maxW,quality,cb){
+  const img=new Image();
+  img.onload=()=>{
+    const cv=$('cv');
+    let w=img.width,h=img.height;
+    if(maxW&&w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+    cv.width=w;cv.height=h;
+    cv.getContext('2d').drawImage(img,0,0,w,h);
+    cb(cv.toDataURL('image/jpeg',quality));
+  };
+  img.src=b64;
+}
+
+function compressFile(file,maxW,quality,cb){
+  const r=new FileReader();
+  r.onload=ev=>compressB64(ev.target.result,maxW,quality,cb);
+  r.readAsDataURL(file);
+}
+
+// ============================================================
+// TOAST & CONFIRM
+// ============================================================
+function toast(msg,type='i'){
+  const t=document.createElement('div');
+  t.className='toast toast-'+type;
+  t.innerHTML=`<span>${type==='s'?'✓':type==='e'?'✕':'ℹ'}</span><span>${esc(msg)}</span>`;
+  $('toast-box').appendChild(t);
+  setTimeout(()=>{t.style.animation='tOut .2s ease forwards';setTimeout(()=>t.remove(),220);},2800);
+}
+
+const openSheet=id=>$(id).classList.add('on');
+const closeSheet=id=>$(id).classList.remove('on');
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.ovl.on').forEach(o=>o.classList.remove('on'));});
+
+function showConfirm(title,msg,cb,okTxt='确认删除',okCls='btn-red'){
+  $('cfm-t').textContent=title;
+  $('cfm-msg').textContent=msg;
+  const ok=$('cfm-ok');
+  ok.textContent=okTxt;ok.className='btn '+okCls;
+  ok.onclick=()=>{closeSheet('ovl-cfm');cb();};
+  openSheet('ovl-cfm');
+}
+
+// ============================================================
+// 文件夹下拉填充
+// ============================================================
+function fillFolderSelects(...ids){
+  ids.forEach(id=>{
+    const sel=$(id);if(!sel)return;
+    const cur=sel.value;
+    sel.innerHTML='<option value="">📂 不分类</option>';
+    D.folders.forEach(f=>{
+      const o=document.createElement('option');
+      o.value=f.id;o.textContent=(f.icon||'📁')+' '+f.name;
+      sel.appendChild(o);
+    });
+    // 恢复之前选中的值
+    if(cur&&D.folders.find(f=>f.id===cur)) sel.value=cur;
+    else sel.value='';
+  });
+}
+
+// ============================================================
+// 快速新建文件夹（弹出迷你卡片，不关闭当前 sheet）
+// ============================================================
+function openQuickFolder(targetSelId){
+  quickFolderTargetSelId=targetSelId;
+  // 移除旧弹窗
+  const old=$('quick-folder-pop');if(old)old.remove();
+  const div=document.createElement('div');
+  div.id='quick-folder-pop';
+  div.className='quick-folder-pop';
+  div.innerHTML=`
+    <div class="quick-folder-card">
+      <div style="font-size:16px;font-weight:700;margin-bottom:14px">📁 新建文件夹</div>
+      <div class="fi">
+        <label class="fl">名称 *</label>
+        <input class="inp" id="qf-name" placeholder="如：表情包、eve…" autofocus>
+      </div>
+      <div class="fi" style="margin-bottom:16px">
+        <label class="fl">图标（emoji，可选）</label>
+        <input class="inp" id="qf-icon" placeholder="📁" maxlength="4">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-out" style="flex:1" onclick="$('quick-folder-pop').remove()">取消</button>
+        <button class="btn btn-blue" style="flex:1" onclick="doQuickFolder()">创建</button>
+      </div>
+    </div>`;
+  // 点击背景关闭
+  div.addEventListener('click',e=>{if(e.target===div)div.remove();});
+  document.body.appendChild(div);
+  setTimeout(()=>$('qf-name')&&$('qf-name').focus(),100);
+}
+
+function doQuickFolder(){
+  const name=($('qf-name').value||'').trim();
+  if(!name){toast('请填写文件夹名称','e');return;}
+  const icon=($('qf-icon').value||'').trim()||'📁';
+  const newFolder={id:gid(),name,icon};
+  D.folders.push(newFolder);
+  save();
+  // 刷新所有文件夹下拉
+fillFolderSelects('save-folder','import-folder','edit-folder','font-save-folder','css-save-folder','lb-folder','ht-folder','cc-folder');
+  // 自动选中新建的文件夹
+  const targetSel=$(quickFolderTargetSelId);
+  if(targetSel) targetSel.value=newFolder.id;
+  $('quick-folder-pop').remove();
+  toast('文件夹「'+name+'」已创建','s');
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function goPage(page){
+  curPage=page;
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  $('pg-'+page).classList.add('on');
+  document.querySelectorAll('.bnav-i').forEach(b=>b.classList.toggle('on',b.dataset.p===page));
+  $('scroll').scrollTop=0;
+  const titles={emoji:'😄 绵的表情包URL转换',archive:'📁 存档',toolbox:'🧰 工具箱',settings:'⚙️ Author：绵'};
+  $('hdr-title').textContent=titles[page]||'Mie绵的小手机工具';
+  const r=$('hdr-r');
+  if(page==='archive'){
+    r.innerHTML=`<button class="hbtn" onclick="openFolderMgr()" title="管理文件夹">📁</button>`;
+  }else{r.innerHTML='';}
+  if(page==='emoji')renderEmoji();
+  else if(page==='archive')renderArchive();
+  else if(page==='toolbox')renderToolbox();
+  else if(page==='settings')renderSettings();
+}
+
+// ============================================================
+// 表情包页
+// ============================================================
+function renderEmoji(){
+  const pg=$('pg-emoji');
+  pg.innerHTML=`
+    <div class="slbl">第一步：填写内容</div>
+    <div class="card"><div class="cb">
+      <div class="fi">
+        <label class="fl">中文名称</label>
+        <textarea class="inp" id="inp-name" rows="3" placeholder="每行一个名称，如：&#10;哭哭&#10;笑哭&#10;无语" oninput="emojiName=this.value;doConvert()">${esc(emojiName)}</textarea>
+        <div class="fhint">支持多行，一行一个名称</div>
+      </div>
+      <div class="fi" style="margin-bottom:0">
+        <label class="fl">对应 URL</label>
+        <textarea class="inp" id="inp-url" rows="3" placeholder="每行一个URL，顺序与名称一一对应" oninput="emojiUrl=this.value;doConvert()">${esc(emojiUrl)}</textarea>
+        <div class="fhint">行数须与名称行数一致</div>
+      </div>
+    </div></div>
+    <div class="slbl">第二步：选择格式</div>
+    <div class="card"><div class="cb">
+      <div class="fmt-grid">
+        ${FORMATS.map((f,i)=>`<div class="fmt-item ${selFmt===i?'on':''}" onclick="selFmt=${i};doConvert();renderEmoji()">${esc(f.label)}</div>`).join('')}
+      </div>
+      ${selFmt===4?`
+        <div class="custom-fmt-row">
+          <span style="font-size:12px;color:var(--orange);font-weight:700;flex-shrink:0">名称</span>
+          <input id="inp-custom-l" placeholder="左侧符号（可空）" value="${esc(customFmtLeft)}" oninput="customFmtLeft=this.value;doConvert()">
+          <span style="font-size:12px;color:var(--t3);flex-shrink:0">url</span>
+          <input id="inp-custom-r" placeholder="右侧（可空）" value="${esc(customFmtRight)}" oninput="customFmtRight=this.value;doConvert()">
+        </div>`:''}
+    </div></div>
+    <div class="slbl">第三步：转换结果</div>
+    <div class="card"><div class="cb">
+      <div class="result-box ${resultText?'has-content':''}" id="result-box">
+        ${resultText
+          ?`<div style="white-space:pre-wrap;font-family:'SF Mono',Consolas,monospace;font-size:13px">${esc(resultText)}</div>`
+          :`<div class="result-empty">👆 填写名称和URL后自动生成</div>`}
+      </div>
+      <div style="display:${resultText?'flex':'none'};gap:8px;margin-top:10px" id="result-acts">
+        <button class="btn btn-green btn-sm" style="flex:1" onclick="copyText(resultText)">📋 复制</button>
+        <button class="btn btn-purple btn-sm" style="flex:1" onclick="openSaveArchive()">💾 存入存档</button>
+      </div>
+    </div></div>`;
+}
+
+function doConvert(){
+  const names=(emojiName||'').split('\n').map(s=>s.trim()).filter(s=>s);
+  const urls=(emojiUrl||'').split('\n').map(s=>s.trim()).filter(s=>s);
+  if(!names.length||!urls.length){resultText='';updateResultBox();return;}
+  if(names.length!==urls.length){resultText='';updateResultBox(`⚠️ 名称 ${names.length} 行，URL ${urls.length} 行，行数不一致`);return;}
+  const lines=names.map((name,i)=>{
+    const url=urls[i];
+    if(selFmt===4)return name+customFmtLeft+url+customFmtRight;
+    return name+FORMATS[selFmt].sep+url;
+  });
+  resultText=lines.join('\n');
+  updateResultBox();
+}
+
+function updateResultBox(errMsg){
+  const box=$('result-box'),acts=$('result-acts');
+  if(!box)return;
+  if(errMsg){box.className='result-box';box.innerHTML=`<div style="color:var(--orange);font-size:13px">${esc(errMsg)}</div>`;if(acts)acts.style.display='none';return;}
+  if(resultText){box.className='result-box has-content';box.innerHTML=`<div style="white-space:pre-wrap;font-family:'SF Mono',Consolas,monospace;font-size:13px">${esc(resultText)}</div>`;if(acts)acts.style.display='flex';}
+  else{box.className='result-box';box.innerHTML=`<div class="result-empty">👆 填写名称和URL后自动生成</div>`;if(acts)acts.style.display='none';}
+}
+
+// 从存档恢复到表情包继续编辑
+function restoreToEmoji(id){
+  const a=D.archives.find(x=>x.id===id);
+  if(!a||a.archiveType!=='text')return;
+  const lines=a.content.split('\n').filter(s=>s.trim());
+  const names=[],urls=[];
+  lines.forEach(line=>{
+    const hi=line.indexOf('http');
+    if(hi===-1){names.push(line);urls.push('');}
+    else{
+      const prefix=line.slice(0,hi).replace(/[\s:：]+$/,'');
+      names.push(prefix);urls.push(line.slice(hi));
+    }
+  });
+  emojiName=names.join('\n');
+  emojiUrl=urls.join('\n');
+  doConvert();
+  goPage('emoji');
+  toast('已恢复到表情包工具','s');
+}
+
+// ============================================================
+// 存档 - 保存
+// ============================================================
+function openSaveArchive(){
+  if(!resultText){toast('没有可保存的内容','e');return;}
+  $('save-preview').textContent=resultText;
+  $('save-name').value='';$('save-tags').value='';
+  fillFolderSelects('save-folder');
+  openSheet('ovl-save');
+  setTimeout(()=>$('save-name').focus(),320);
+}
+
+function doSaveArchive(){
+  const name=$('save-name').value.trim();
+  if(!name){toast('请填写存档名称','e');return;}
+  const tags=parseTags($('save-tags').value);
+  const folderId=$('save-folder').value;
+  pushArchive({name,content:resultText,folderId,tags,archiveType:'text'});
+  closeSheet('ovl-save');
+  toast('已存入存档','s');
+}
+
+function pushArchive(obj){
+  D.archives.unshift({
+    id:gid(),name:'',content:'',folderId:'',tags:[],archiveType:'text',
+    createdAt:new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
+    ...obj
+  });
+  save();
+}
+
+// ============================================================
+// 文件夹管理
+// ============================================================
+function openFolderMgr(){
+  renderFolderMgrList();
+  openSheet('ovl-folder-mgr');
+}
+
+function renderFolderMgrList(){
+  const list=$('folder-mgr-list');if(!list)return;
+  if(!D.folders.length){
+    list.innerHTML=`<div style="text-align:center;padding:24px;color:var(--t3);font-size:13px">还没有文件夹，点击下方新建</div>`;
+    return;
+  }
+  list.innerHTML=D.folders.map(f=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:22px">${esc(f.icon||'📁')}</span>
+      <span style="flex:1;font-size:15px;font-weight:600">${esc(f.name)}</span>
+      <span style="font-size:12px;color:var(--t3)">${D.archives.filter(a=>a.folderId===f.id).length}条</span>
+      <button class="btn-ico" onclick="openFolderEdit('${f.id}')">✏️</button>
+      <button class="btn-ico" style="background:var(--red-bg);color:var(--red)" onclick="delFolder('${f.id}')">🗑️</button>
+    </div>`).join('');
+}
+
+function openFolderEdit(id){
+  if(id){
+    const f=D.folders.find(x=>x.id===id);if(!f)return;
+    $('folder-edit-title').textContent='重命名文件夹';
+    $('folder-edit-id').value=id;
+    $('folder-edit-name').value=f.name;
+    $('folder-edit-icon').value=f.icon||'';
+  }else{
+    $('folder-edit-title').textContent='新建文件夹';
+    $('folder-edit-id').value='';
+    $('folder-edit-name').value='';
+    $('folder-edit-icon').value='';
+  }
+  openSheet('ovl-folder-edit');
+}
+
+function doSaveFolder(){
+  const name=$('folder-edit-name').value.trim();
+  if(!name){toast('请填写文件夹名称','e');return;}
+  const icon=$('folder-edit-icon').value.trim()||'📁';
+  const editId=$('folder-edit-id').value;
+  if(editId){
+    const f=D.folders.find(x=>x.id===editId);
+    if(f){f.name=name;f.icon=icon;}
+  }else{
+    D.folders.push({id:gid(),name,icon});
+  }
+  save();closeSheet('ovl-folder-edit');
+  renderFolderMgrList();
+  fillFolderSelects('save-folder','import-folder','edit-folder','font-save-folder','css-save-folder','lb-folder','ht-folder','cc-folder');
+  toast('已保存','s');
+}
+
+function delFolder(id){
+  const f=D.folders.find(x=>x.id===id);
+  const cnt=D.archives.filter(a=>a.folderId===id).length;
+  showConfirm('删除文件夹',`删除「${f?.name}」？其中 ${cnt} 条存档将移至未分类。`,()=>{
+    D.folders=D.folders.filter(x=>x.id!==id);
+    D.archives.forEach(a=>{if(a.folderId===id)a.folderId='';});
+    save();renderFolderMgrList();renderArchive();toast('已删除','s');
+  });
+}
+
+// ============================================================
+// 导入存档
+// ============================================================
+function openImport(){
+  $('import-name').value='';$('import-content').value='';
+  $('import-tags').value='';$('rep-from').value='';$('rep-to').value='';
+  fillFolderSelects('import-folder');
+  openSheet('ovl-import');
+  setTimeout(()=>$('import-name').focus(),320);
+}
+
+function loadTxtFile(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{$('import-content').value=ev.target.result;toast('TXT已读取','s');};
+  r.readAsText(f,'utf-8');e.target.value='';
+}
+
+function loadDocxFile(e){
+  const f=e.target.files[0];if(!f)return;
+  if(typeof mammoth==='undefined'){
+    toast('mammoth.js加载中，请稍后再试…','i');
+    e.target.value='';return;
+  }
+  const r=new FileReader();
+  r.onload=ev=>{
+    mammoth.extractRawText({arrayBuffer:ev.target.result})
+      .then(res=>{
+        if(!res.value||!res.value.trim()){toast('DOCX内容为空或解析失败','e');return;}
+        $('import-content').value=res.value;
+        toast('DOCX已读取，共'+res.value.length+'字','s');
+      })
+      .catch(err=>{toast('DOCX解析失败：'+err.message,'e');});
+  };
+  r.readAsArrayBuffer(f);
+  e.target.value='';
+}
+
+
+function doImportArchive(){
+  const name=$('import-name').value.trim();
+  let content=$('import-content').value.trim();
+  if(!name){toast('请填写存档名称','e');return;}
+  if(!content){toast('请填写或导入内容','e');return;}
+  const from=$('rep-from').value; // 注意：to 允许为空
+  const to=$('rep-to').value;
+  if(from){
+    // 统计替换次数（只算http前的范围）
+    let count=0;
+    content.split('\n').forEach(line=>{
+      const hi=line.indexOf('http');
+      const zone=hi===-1?line:line.slice(0,hi);
+      count+=zone.split(from).length-1;
+    });
+    content=smartReplace(content,from,to);
+    if(count>0)toast(`已替换 ${count} 处「${from}」→「${to||'(删除)'}」（URL已保护）`,'i');
+    else toast(`未找到「${from}」`,'i');
+  }
+  const tags=parseTags($('import-tags').value);
+  const folderId=$('import-folder').value;
+  pushArchive({name,content,folderId,tags,archiveType:'text'});
+  closeSheet('ovl-import');renderArchive();toast('导入成功','s');
+}
+
+// ============================================================
+// 存档列表渲染
+// ============================================================
+function renderArchive(){
+  const pg=$('pg-archive');
+
+  // 文件夹 bar HTML
+  const folderBar=`<div class="folder-bar">
+    <div class="folder-chip ${archiveFolderFilter==='__all__'?'on':''}" onclick="archiveFolderFilter='__all__';renderArchive()">全部 <span style="font-size:11px;opacity:.6">${D.archives.length}</span></div>
+    <div class="folder-chip ${archiveFolderFilter===''?'on':''}" onclick="archiveFolderFilter='';renderArchive()">📂未分类 <span style="font-size:11px;opacity:.6">${D.archives.filter(a=>!a.folderId).length}</span></div>
+    ${D.folders.map(f=>`<div class="folder-chip ${archiveFolderFilter===f.id?'on':''}" onclick="archiveFolderFilter='${f.id}';renderArchive()">${esc(f.icon||'📁')} ${esc(f.name)} <span style="font-size:11px;opacity:.6">${D.archives.filter(a=>a.folderId===f.id).length}</span></div>`).join('')}
+  </div>`;
+
+  // 搜索框（静态渲染，事件后绑定）
+  const searchBox=`<div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input id="archive-search-inp" class="search-inp" type="text" placeholder="搜索，多词用逗号/空格分隔…" value="${esc(archiveQInput)}" autocomplete="off" autocorrect="off" spellcheck="false">
+  </div>`;
+
+  // 列表容器（关键：直接在这里预留，renderArchiveList 只填充这个div）
+  const listContainer=`<div id="archive-list-body"></div>`;
+
+  if(!D.archives.length){
+    pg.innerHTML=folderBar+searchBox+`<div style="text-align:center;padding:60px 20px;color:var(--t3)">
+      <div style="font-size:48px;margin-bottom:12px">📭</div>
+      <div style="font-size:15px;font-weight:600;color:var(--t2);margin-bottom:6px">还没有存档</div>
+      <div style="font-size:13px;line-height:1.6;margin-bottom:20px">在表情包工具转换后点击「存入存档」<br>或点击右上角按钮导入已有内容</div>
+      <button class="btn btn-ghost btn-sm" onclick="openImport()">📥 导入存档</button>
+    </div>`;
+  }else{
+    // 结构：folderBar + searchBox + listContainer（顺序固定）
+    pg.innerHTML=folderBar+searchBox+listContainer;
+    // 立即填充列表
+    renderArchiveList();
+  }
+
+  // 绑定搜索框事件（每次 renderArchive 后重新绑定）
+  bindSearchInput();
+}
+
+function bindSearchInput(){
+  const inp=$('archive-search-inp');
+  if(!inp)return;
+  let composing=false;
+  inp.addEventListener('compositionstart',()=>composing=true);
+  inp.addEventListener('compositionend',()=>{
+    composing=false;
+    archiveQInput=inp.value;
+    archiveQ=inp.value.trim();
+    clearTimeout(searchTimer);
+    // compositionend 后立即刷新列表（不动搜索框）
+    renderArchiveList();
+  });
+  inp.addEventListener('input',()=>{
+    archiveQInput=inp.value;
+    if(composing)return;
+    clearTimeout(searchTimer);
+    searchTimer=setTimeout(()=>{
+      archiveQ=inp.value.trim();
+      renderArchiveList();
+    },200);
+  });
+}
+
+// 只更新列表区，绝对不碰搜索框
+function renderArchiveList(){
+  const container=$('archive-list-body');
+  if(!container)return;
+
+  // 过滤
+  const list=D.archives.filter(a=>{
+    if(archiveFolderFilter==='__all__'){}
+    else if(archiveFolderFilter===''){if(a.folderId!=='')return false;}
+    else{if(a.folderId!==archiveFolderFilter)return false;}
+    if(archiveQ){
+      const qs=archiveQ.split(/[,，\s]+/).map(s=>s.trim().toLowerCase()).filter(s=>s);
+      const folder=D.folders.find(f=>f.id===a.folderId);
+      const searchText=[
+        a.name,
+        (a.tags||[]).join(' '),
+        folder?folder.name:'',
+        a.content||''
+      ].join(' ').toLowerCase();
+      // 所有关键词都必须命中（取交集）
+      if(!qs.every(q=>searchText.includes(q)))return false;
+    }
+
+    return true;
+  });
+
+  if(!list.length){
+    container.innerHTML=`<div style="text-align:center;padding:40px 20px;color:var(--t3);font-size:13px">🔍 没有找到匹配的存档</div>`;
+    return;
+  }
+
+  let html=`<div style="font-size:12px;color:var(--t3);font-weight:600;margin-bottom:8px">共 ${list.length} 条${archiveQ?` · 搜索「${esc(archiveQ)}」`:''}</div>`;
+
+  list.forEach(a=>{
+    const folder=D.folders.find(f=>f.id===a.folderId);
+    const folderBadge=folder?`<span style="font-size:11px;color:var(--blue);background:var(--blue-bg);border-radius:6px;padding:1px 6px;margin-right:4px">${esc(folder.icon||'📁')} ${esc(folder.name)}</span>`:'';
+    const tagChips=(a.tags||[]).map(t=>`<span class="tag-chip">${esc(t)}</span>`).join('');
+
+    // 卡片主体按类型渲染
+    let cardBody='';
+    if(a.archiveType==='font'){
+      // 字体：注入字体样式，用真实字体渲染预览文字
+      const fontFaceId='af_'+a.id;
+      const previewTxt=esc(a.previewText||'哈哈哈 Hello 123');
+      // 确保 @font-face 已注入
+      if(a.fontUrl&&!document.getElementById('fstyle_'+a.id)){
+        const st=document.createElement('style');
+        st.id='fstyle_'+a.id;
+        st.textContent=`@font-face{font-family:'${fontFaceId}';src:url('${a.fontUrl}')}`;
+        document.head.appendChild(st);
+      }
+      cardBody=`
+        <div style="font-size:11px;color:var(--t4);margin-bottom:6px;word-break:break-all;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🔗 ${esc(a.fontUrl||'')}</div>
+        <div style="font-family:'${fontFaceId}',sans-serif;font-size:22px;padding:10px 12px;background:var(--card2);border-radius:10px;margin-bottom:6px;min-height:50px;word-break:break-all;line-height:1.4">${previewTxt}</div>`;
+    }else if(a.archiveType==='bubble'||a.archiveType==='theme'){
+      // 气泡/主题：显示预览图，无图则显示CSS摘要
+      cardBody=a.previewImg&&a.previewImg.length>50
+        ?`<img src="${a.previewImg}" style="width:100%;border-radius:8px;max-height:140px;object-fit:cover;display:block;margin-bottom:6px" onerror="this.style.display='none'">`
+        :`<div class="archive-content">CSS代码 · ${(a.content||'').length}字符</div>`;
+        }else if(a.archiveType==='lorebook'){
+      // 世界书：显示文字摘要
+      const lines=(a.content||'').split('\n').filter(s=>s.trim());
+      cardBody=`
+        <div class="archive-content">${esc(a.content||'')}</div>
+        <div class="archive-meta">📅 ${esc(a.createdAt||'')} &nbsp;·&nbsp; 共 ${(a.content||'').length} 字</div>`;
+    }else if(a.archiveType==='html'){
+      const htmlContent=extractHtmlPart(a.content||'').replace(/"/g,'&quot;');
+      cardBody=`<div style="border-radius:12px;overflow:hidden;line-height:0;margin-bottom:6px"><iframe class="html-preview-frame" sandbox="allow-scripts allow-same-origin" srcdoc="${htmlContent}" scrolling="no" style="margin:0;padding:0;display:block"></iframe></div>`;
+
+
+    }else if(a.archiveType==='charcard'){
+      // 角色卡：有图显示图，无图显示文字
+      cardBody=a.previewImg&&a.previewImg.length>50
+        ?`<img src="${a.previewImg}" class="char-img-box" onerror="this.style.display='none'">`
+        :`<div class="archive-content">${esc(a.content||'')}</div>`;
+      cardBody+=`<div class="archive-meta">📅 ${esc(a.createdAt||'')} &nbsp;·&nbsp; 共 ${(a.content||'').length} 字</div>`;
+    }else{
+      // 普通文本
+      const lines=(a.content||'').split('\n').filter(s=>s.trim());
+      cardBody=`
+        <div class="archive-content">${esc(a.content||'')}</div>
+        <div class="archive-meta">📅 ${esc(a.createdAt||'')} &nbsp;·&nbsp; 共 ${lines.length} 条</div>`;
+    }
+
+    // 复制按钮文案
+    const copyLabel=a.archiveType==='font'?'📋 复制URL':a.archiveType==='bubble'||a.archiveType==='theme'?'📋 复制CSS':'📋 复制';
+    const restoreBtn=a.archiveType==='text'?`<button class="btn btn-orange btn-xs" onclick="restoreToEmoji('${a.id}')">↩️ 重新转换</button>`:'';
+    const typeIcon=a.archiveType==='font'?'🔤':a.archiveType==='bubble'?'💬':a.archiveType==='theme'?'🎨':a.archiveType==='lorebook'?'📖':a.archiveType==='html'?'🌐':a.archiveType==='charcard'?'🎭':'📄';
+    const contentLen=(a.archiveType==='font'?a.fontUrl||'':a.content||'').length;
+    // 超6000字：一键复制 + 分块复制；否则只有一键复制
+    const copyBtns=contentLen>6000
+      ?`<button class="btn btn-green btn-xs" onclick="copyArchive('${a.id}')">📋 一键复制</button><button class="btn btn-green btn-xs" onclick="copyOrChunk('${a.id}')">📦 分块复制</button>`
+      :`<button class="btn btn-green btn-xs" onclick="copyArchive('${a.id}')">${copyLabel}</button>`;
+
+    html+=`<div class="archive-card" data-id="${a.id}">
+      <div class="archive-name">${typeIcon} ${esc(a.name)}</div>
+      <div class="tag-row">${folderBadge}${tagChips}</div>
+      ${cardBody}
+      <div class="archive-acts">
+        ${copyBtns}
+        ${a.archiveType!=='font'?`<button class="btn btn-green btn-xs" onclick="exportArchiveTxt('${a.id}')">📄 导出TXT</button>`:''}
+        <button class="btn btn-ghost btn-xs" onclick="openEditArchive('${a.id}')">✏️ 编辑</button>
+        ${restoreBtn}
+        <button class="btn btn-red btn-xs" onclick="delArchive('${a.id}')">删除</button>
+      </div>
+    </div>`;
+  });
+
+  container.innerHTML=html;
+}
+
+// ============================================================
+// 存档 - 编辑
+// ============================================================
+function openEditArchive(id){
+  const a=D.archives.find(x=>x.id===id);if(!a)return;
+  $('edit-id').value=id;
+  $('edit-name').value=a.name;
+  $('edit-tags').value=(a.tags||[]).join(',');
+  fillFolderSelects('edit-folder');$('edit-folder').value=a.folderId||'';
+  $('edit-rep-from').value='';$('edit-rep-to').value='';
+  const label=$('edit-content-label');
+  const ta=$('edit-content');
+  if(a.archiveType==='font'){
+    ta.value=a.fontUrl||'';
+    if(label)label.textContent='字体URL';
+  }else if(a.archiveType==='bubble'||a.archiveType==='theme'){
+    ta.value=a.content||'';
+    if(label)label.textContent='CSS代码';
+  }else{
+    ta.value=a.content||'';
+    if(label)label.textContent='内容';
+  }
+  openSheet('ovl-edit');
+}
+
+function doReplaceInEdit(){
+  const from=$('edit-rep-from').value;
+  const to=$('edit-rep-to').value; // to 允许为空
+  if(!from){toast('请填写原符号','e');return;}
+  const content=$('edit-content').value;
+  let count=0;
+  content.split('\n').forEach(line=>{
+    const hi=line.indexOf('http');
+    const zone=hi===-1?line:line.slice(0,hi);
+    count+=zone.split(from).length-1;
+  });
+  if(count===0){toast('未找到「'+from+'」（URL范围内不替换）','i');return;}
+  $('edit-content').value=smartReplace(content,from,to);
+  toast(`已替换 ${count} 处「${from}」→「${to||'(删除)'}」`,'s');
+}
+
+function doEditArchive(){
+  const id=$('edit-id').value;
+  const a=D.archives.find(x=>x.id===id);if(!a)return;
+  const name=$('edit-name').value.trim();
+  if(!name){toast('请填写名称','e');return;}
+  const content=$('edit-content').value.trim();
+  a.name=name;
+  a.tags=parseTags($('edit-tags').value);
+  a.folderId=$('edit-folder').value;
+  if(a.archiveType==='font'){a.fontUrl=content;a.content=`字体URL: ${content}`;}
+  else{if(!content){toast('内容不能为空','e');return;}a.content=content;}
+  save();closeSheet('ovl-edit');renderArchive();toast('已保存','s');
+}
+
+function delArchive(id){
+  const a=D.archives.find(x=>x.id===id);
+  showConfirm('删除存档',`确定删除「${a?.name}」？不可恢复。`,()=>{
+    D.archives=D.archives.filter(x=>x.id!==id);
+    save();renderArchive();toast('已删除','s');
+  });
+}
+
+// ============================================================
+// 工具箱
+// ============================================================
+function renderToolbox(){
+  $('pg-toolbox').innerHTML=`
+    <div class="slbl">选择工具</div>
+    <div class="tool-grid">
+      <div class="tool-card" onclick="openFontTool()">
+        <div class="tool-ico">🔤</div>
+        <div class="tool-name">字体预览</div>
+        <div class="tool-desc">输入字体URL，实时预览，存入存档</div>
+      </div>
+      <div class="tool-card" onclick="openCssTool('bubble')">
+        <div class="tool-ico">💬</div>
+        <div class="tool-name">气泡美化</div>
+        <div class="tool-desc">存CSS代码，上传效果图，存入存档</div>
+      </div>
+      <div class="tool-card" onclick="openCssTool('theme')">
+        <div class="tool-ico">🎨</div>
+        <div class="tool-name">主题美化</div>
+        <div class="tool-desc">存CSS代码，上传效果图，存入存档</div>
+      </div>
+      <div class="tool-card" onclick="openLorebookTool()">
+        <div class="tool-ico">📖</div>
+        <div class="tool-name">世界书</div>
+        <div class="tool-desc">存储世界书设定，支持TXT导入</div>
+      </div>
+      <div class="tool-card" onclick="openHtmlTool()">
+        <div class="tool-ico">🌐</div>
+        <div class="tool-name">HTML存档</div>
+        <div class="tool-desc">存HTML代码，支持本地实时预览</div>
+      </div>
+      <div class="tool-card" onclick="openCharCardTool()">
+        <div class="tool-ico">🎭</div>
+        <div class="tool-name">角色卡</div>
+        <div class="tool-desc">存角色设定，可上传角色图</div>
+      </div>
+      <div class="tool-card" onclick="openImport()">
+        <div class="tool-ico">📥</div>
+        <div class="tool-name">表情包导入</div>
+        <div class="tool-desc">导入已有表情包格式内容，支持TXT/DOCX</div>
+      </div>
+    </div>`;
+}
+
+
+// 字体工具
+function openFontTool(){
+  $('font-url-inp').value='';
+  $('font-text-inp').value='哈哈哈 Hello 123 ！';
+  $('font-preview-box').textContent='在上方输入字体URL后显示预览';
+  $('font-preview-box').className='font-preview-box';
+  $('font-preview-box').style.fontFamily='';
+  $('font-load-hint').textContent='';
+  $('font-save-name').value='';$('font-save-tags').value='';
+  fillFolderSelects('font-save-folder');
+  tbFontFamily='';
+  openSheet('ovl-font');
+}
+
+function tbLoadFont(){
+  const url=$('font-url-inp').value.trim();
+  const hint=$('font-load-hint'),preview=$('font-preview-box');
+  if(!url){preview.style.fontFamily='';preview.textContent='在上方输入字体URL后显示预览';hint.textContent='';return;}
+  hint.textContent='⏳ 加载中…';
+  const fid='tbf_'+Date.now();
+  tbFontFamily=fid;
+  const old=$('__font_style__');if(old)old.remove();
+  const st=document.createElement('style');
+  st.id='__font_style__';
+  st.textContent=`@font-face{font-family:'${fid}';src:url('${url}')}`;
+  document.head.appendChild(st);
+  document.fonts.ready.then(()=>{
+    preview.style.fontFamily=`'${fid}',sans-serif`;
+    preview.className='font-preview-box loaded';
+    tbUpdateFontText();
+    hint.textContent='✅ 已加载（若显示异常请检查URL或网络）';
+  }).catch(()=>{hint.textContent='❌ 加载失败，请检查URL';});
+}
+
+function tbUpdateFontText(){
+  const p=$('font-preview-box');if(!p)return;
+  p.textContent=$('font-text-inp')?.value||'哈哈哈 Hello 123';
+}
+
+function tbSaveFontArchive(){
+  const url=$('font-url-inp').value.trim();
+  const name=$('font-save-name').value.trim();
+  if(!url){toast('请输入字体URL','e');return;}
+  if(!name){toast('请填写存档名称','e');return;}
+  const extraTags=parseTags($('font-save-tags').value);
+  const tags=['字体',...extraTags.filter(t=>t!=='字体')];
+  const folderId=$('font-save-folder').value;
+  const previewText=$('font-text-inp')?.value||'';
+  pushArchive({name,content:`字体URL: ${url}`,fontUrl:url,previewText,archiveType:'font',folderId,tags});
+  closeSheet('ovl-font');
+  toast('字体已存入存档','s');
+}
+
+// CSS工具
+function openCssTool(type){
+  cssToolType=type;cssImgB64='';
+  $('css-tool-title').textContent=type==='bubble'?'💬 气泡美化':'🎨 主题美化';
+  $('css-code-inp').value='';
+  $('css-save-name').value='';$('css-save-tags').value='';
+  $('css-img-area').innerHTML=`<div class="img-upload-zone" onclick="$('fi-css-img').click()">
+    <div style="font-size:28px;margin-bottom:6px">📷</div>
+    <div style="font-size:13px;font-weight:600;color:var(--t2)">点击上传效果图</div>
+    <div style="font-size:11px;color:var(--t3);margin-top:2px">图片会自动压缩存储</div>
+  </div>`;
+  fillFolderSelects('css-save-folder');
+  openSheet('ovl-css');
+}
+
+function loadCssImg(e){
+  const f=e.target.files[0];if(!f)return;
+  compressFile(f,800,0.75,b64=>{
+    cssImgB64=b64;
+    const sizeKb=Math.round(b64.length*0.75/1024);
+    $('css-img-area').innerHTML=`
+      <div style="position:relative">
+        <img src="${b64}" class="img-thumb">
+        <button onclick="clearCssImg()" style="position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+      </div>
+      <div class="fhint" style="margin-top:4px">约 ${sizeKb}KB · <span style="color:var(--blue);cursor:pointer" onclick="$('fi-css-img').click()">重新选择</span></div>`;
+  });
+  e.target.value='';
+}
+
+function clearCssImg(){
+  cssImgB64='';
+  $('css-img-area').innerHTML=`<div class="img-upload-zone" onclick="$('fi-css-img').click()">
+    <div style="font-size:28px;margin-bottom:6px">📷</div>
+    <div style="font-size:13px;font-weight:600;color:var(--t2)">点击上传效果图</div>
+    <div style="font-size:11px;color:var(--t3);margin-top:2px">图片会自动压缩存储</div>
+  </div>`;
+}
+
+function cssReadFile(e){
+  const f=e.target.files[0];if(!f)return;
+  if(f.name.endsWith('.docx')){
+    if(typeof mammoth==='undefined'){toast('mammoth.js未加载，请稍后再试','i');e.target.value='';return;}
+    const r=new FileReader();
+    r.onload=ev=>{
+      mammoth.extractRawText({arrayBuffer:ev.target.result})
+        .then(res=>{$('css-code-inp').value=res.value;toast('DOCX已读取','s');})
+        .catch(err=>{toast('DOCX解析失败：'+err.message,'e');});
+    };
+    r.readAsArrayBuffer(f);
+  }else{
+    const r=new FileReader();
+    r.onload=ev=>{$('css-code-inp').value=ev.target.result;toast('TXT已读取','s');};
+    r.readAsText(f,'utf-8');
+  }
+  e.target.value='';
+}
+
+function tbSaveCssArchive(){
+  const css=$('css-code-inp').value.trim();
+  const name=$('css-save-name').value.trim();
+  if(!name){toast('请填写存档名称','e');return;}
+  const extraTags=parseTags($('css-save-tags').value);
+  const autoTag=cssToolType==='bubble'?'气泡':'主题';
+  const tags=[autoTag,...extraTags.filter(t=>t!==autoTag)];
+  const folderId=$('css-save-folder').value;
+  pushArchive({name,content:css,previewImg:cssImgB64||'',archiveType:cssToolType,folderId,tags});
+  closeSheet('ovl-css');
+  toast(`${autoTag}已存入存档${cssImgB64?' (含效果图)':''}`, 's');
+}
+// ============================================================
+// 世界书工具
+// ============================================================
+function openLorebookTool(){
+  $('lb-name').value='';$('lb-tags').value='';$('lb-content').value='';
+  fillFolderSelects('lb-folder');
+  openSheet('ovl-lorebook');
+  setTimeout(()=>$('lb-name').focus(),320);
+}
+function lbImportTxt(){ $('fi-lb-txt').click(); }
+function lbReadFile(e){
+  const f=e.target.files[0];if(!f)return;
+  if(f.name.endsWith('.docx')){
+    if(typeof mammoth==='undefined'){toast('mammoth.js未加载，请稍后再试','i');e.target.value='';return;}
+    const r=new FileReader();
+    r.onload=ev=>{
+      mammoth.extractRawText({arrayBuffer:ev.target.result})
+        .then(res=>{$('lb-content').value=res.value;toast('DOCX已读取','s');})
+        .catch(err=>{toast('DOCX解析失败：'+err.message,'e');});
+    };
+    r.readAsArrayBuffer(f);
+  }else{
+    const r=new FileReader();
+    r.onload=ev=>{$('lb-content').value=ev.target.result;toast('TXT已读取','s');};
+    r.readAsText(f,'utf-8');
+  }
+  e.target.value='';
+}
+
+function lbSave(){
+  const name=$('lb-name').value.trim();
+  if(!name){toast('请填写名称','e');return;}
+  const content=$('lb-content').value.trim();
+  if(!content){toast('请填写内容','e');return;}
+  const extraTags=parseTags($('lb-tags').value);
+  const tags=['世界书',...extraTags.filter(t=>t!=='世界书')];
+  const folderId=$('lb-folder').value;
+  pushArchive({name,content,folderId,tags,archiveType:'lorebook'});
+  closeSheet('ovl-lorebook');
+  toast('世界书已存入存档','s');
+}
+
+// ============================================================
+// HTML工具
+// ============================================================
+function openHtmlTool(){
+  $('ht-name').value='';$('ht-tags').value='';$('ht-content').value='';
+  $('ht-preview-area').innerHTML=`<div style="color:var(--t4);font-size:13px;text-align:center;padding:16px;background:var(--card2);border-radius:12px">填写HTML代码后自动预览</div>`;
+  fillFolderSelects('ht-folder');
+  openSheet('ovl-htmltool');
+  setTimeout(()=>$('ht-name').focus(),320);
+}
+function htImportTxt(){ $('fi-ht-txt').click(); }
+function htReadFile(e){
+  const f=e.target.files[0];if(!f)return;
+  if(f.name.endsWith('.docx')){
+    if(typeof mammoth==='undefined'){toast('mammoth.js未加载，请稍后再试','i');e.target.value='';return;}
+    const r=new FileReader();
+    r.onload=ev=>{
+      mammoth.extractRawText({arrayBuffer:ev.target.result})
+        .then(res=>{$('ht-content').value=res.value;htUpdatePreview();toast('DOCX已读取','s');})
+        .catch(err=>{toast('DOCX解析失败：'+err.message,'e');});
+    };
+    r.readAsArrayBuffer(f);
+  }else{
+    const r=new FileReader();
+    r.onload=ev=>{$('ht-content').value=ev.target.result;htUpdatePreview();toast('TXT已读取','s');};
+    r.readAsText(f,'utf-8');
+  }
+  e.target.value='';
+}
+
+function extractHtmlPart(str){
+  // 找到第一个 < 标签开始的位置，忽略前面的说明文字
+  const idx=str.indexOf('<');
+  if(idx===-1)return str;
+  let html=str.slice(idx);
+  // 如果开头是 <!-- 注释，尝试跳过所有纯注释开头段落，找到真正的标签
+  // 优先找 <!DOCTYPE 或 <html 或 <style 或 <div 等实际内容
+  const realStart=html.search(/<(!DOCTYPE|html|head|body|style|div|script|link|meta|p|span|section|main|article|header|footer|ul|ol|table)/i);
+  if(realStart>0)html=html.slice(realStart);
+  return html;
+}
+
+function htUpdatePreview(){
+  const html=$('ht-content').value.trim();
+  const area=$('ht-preview-area');if(!area)return;
+  if(!html){
+    area.innerHTML=`<div style="color:var(--t4);font-size:13px;text-align:center;padding:16px;background:var(--card2);border-radius:12px">填写HTML代码后自动预览</div>`;
+    return;
+  }
+  const htmlPart=extractHtmlPart(html);
+  area.innerHTML=`<div style="border-radius:12px;overflow:hidden;line-height:0"><iframe class="html-preview-frame" sandbox="allow-scripts allow-same-origin" srcdoc="${htmlPart.replace(/"/g,'&quot;')}" scrolling="no" style="margin:0;display:block"></iframe></div>`;
+
+}
+function htSave(){
+  const name=$('ht-name').value.trim();
+  if(!name){toast('请填写名称','e');return;}
+  const content=$('ht-content').value.trim();
+  if(!content){toast('请填写HTML代码','e');return;}
+  const extraTags=parseTags($('ht-tags').value);
+  const tags=['HTML',...extraTags.filter(t=>t!=='HTML')];
+  const folderId=$('ht-folder').value;
+  pushArchive({name,content,folderId,tags,archiveType:'html'});
+  closeSheet('ovl-htmltool');
+  toast('HTML已存入存档','s');
+}
+
+// ============================================================
+// 角色卡工具
+// ============================================================
+function openCharCardTool(){
+  ccImgB64='';
+  $('cc-name').value='';$('cc-tags').value='';$('cc-content').value='';
+  $('cc-img-area').innerHTML=`
+    <div class="img-upload-zone" onclick="$('fi-cc-img').click()">
+      <div style="font-size:28px;margin-bottom:6px">🖼️</div>
+      <div style="font-size:13px;font-weight:600;color:var(--t2)">点击上传角色图</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:2px">图片会自动压缩存储</div>
+    </div>`;
+  fillFolderSelects('cc-folder');
+  openSheet('ovl-charcard');
+  setTimeout(()=>$('cc-name').focus(),320);
+}
+function ccImportTxt(){ $('fi-cc-txt').click(); }
+function ccReadFile(e){
+  const f=e.target.files[0];if(!f)return;
+  if(f.name.endsWith('.docx')){
+    if(typeof mammoth==='undefined'){toast('mammoth.js未加载，请稍后再试','i');e.target.value='';return;}
+    const r=new FileReader();
+    r.onload=ev=>{
+      mammoth.extractRawText({arrayBuffer:ev.target.result})
+        .then(res=>{$('cc-content').value=res.value;toast('DOCX已读取','s');})
+        .catch(err=>{toast('DOCX解析失败：'+err.message,'e');});
+    };
+    r.readAsArrayBuffer(f);
+  }else{
+    const r=new FileReader();
+    r.onload=ev=>{$('cc-content').value=ev.target.result;toast('TXT已读取','s');};
+    r.readAsText(f,'utf-8');
+  }
+  e.target.value='';
+}
+
+function ccLoadImg(e){
+  const f=e.target.files[0];if(!f)return;
+  compressFile(f,800,0.75,b64=>{
+    ccImgB64=b64;
+    const sizeKb=Math.round(b64.length*0.75/1024);
+    $('cc-img-area').innerHTML=`
+      <div style="position:relative">
+        <img src="${b64}" class="char-img-box">
+        <button onclick="clearCcImg()" style="position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+      </div>
+      <div class="fhint" style="margin-top:4px">约 ${sizeKb}KB · <span style="color:var(--blue);cursor:pointer" onclick="$('fi-cc-img').click()">重新选择</span></div>`;
+  });
+  e.target.value='';
+}
+function clearCcImg(){
+  ccImgB64='';
+  $('cc-img-area').innerHTML=`
+    <div class="img-upload-zone" onclick="$('fi-cc-img').click()">
+      <div style="font-size:28px;margin-bottom:6px">🖼️</div>
+      <div style="font-size:13px;font-weight:600;color:var(--t2)">点击上传角色图</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:2px">图片会自动压缩存储</div>
+    </div>`;
+}
+function ccSave(){
+  const name=$('cc-name').value.trim();
+  if(!name){toast('请填写名称','e');return;}
+  const content=$('cc-content').value.trim();
+  if(!content){toast('请填写角色卡内容','e');return;}
+  const extraTags=parseTags($('cc-tags').value);
+  const tags=['角色卡',...extraTags.filter(t=>t!=='角色卡')];
+  const folderId=$('cc-folder').value;
+  pushArchive({name,content,previewImg:ccImgB64||'',folderId,tags,archiveType:'charcard'});
+  closeSheet('ovl-charcard');
+  toast('角色卡已存入存档','s');
+}
+
+// ============================================================
+// 设置页
+// ============================================================
+function renderSettings(){
+  const imgArchives=D.archives.filter(a=>a.previewImg&&a.previewImg.length>100);
+  const totalImgKb=imgArchives.reduce((s,a)=>s+Math.round((a.previewImg||'').length*0.75/1024),0);
+  $('pg-settings').innerHTML=`
+    <div class="slbl">外观</div>
+    <div class="card"><div class="cb">
+      <div class="th-sw">
+        <div class="th-o ${D.settings.theme==='light'?'on':''}" onclick="setTheme('light')">☀️ 浅色</div>
+        <div class="th-o ${D.settings.theme==='dark'?'on':''}" onclick="setTheme('dark')">🌙 深色</div>
+      </div>
+    </div></div>
+    <div class="slbl">图片管理</div>
+    <div class="card">
+      <div class="set-i" onclick="openBatchCompress()">
+        <div class="set-ico" style="background:var(--orange-bg)">🗜️</div>
+        <div class="set-tx">
+          <div class="set-t">批量压缩存档图片</div>
+          <div class="set-d">${imgArchives.length} 张效果图，共约 ${totalImgKb}KB</div>
+        </div>
+        <span style="color:var(--t4);font-size:16px">›</span>
+      </div>
+    </div>
+    <div class="slbl">数据管理</div>
+    <div class="card">
+      <div class="set-i" onclick="exportBackup()">
+        <div class="set-ico" style="background:var(--blue-bg)">📤</div>
+        <div class="set-tx"><div class="set-t">导出全部存档</div><div class="set-d">备份为 JSON 文件</div></div>
+        <span style="color:var(--t4);font-size:16px">›</span>
+      </div>
+      <div class="set-i" onclick="$('fi-backup').click()">
+        <div class="set-ico" style="background:var(--green-bg)">📥</div>
+        <div class="set-tx"><div class="set-t">从 JSON 恢复数据</div><div class="set-d">覆盖当前全部数据</div></div>
+        <span style="color:var(--t4);font-size:16px">›</span>
+      </div>
+      <div class="set-i" onclick="clearAll()">
+        <div class="set-ico" style="background:var(--red-bg)">🗑️</div>
+        <div class="set-tx"><div class="set-t" style="color:var(--red)">清除全部数据</div><div class="set-d">删除所有存档，不可撤销</div></div>
+        <span style="color:var(--t4);font-size:16px">›</span>
+      </div>
+    </div>
+    <div class="slbl">关于</div>
+    <div class="card"><div class="cb" style="font-size:13px;color:var(--t3);line-height:2">
+      · 所有数据保存在本地浏览器，不上传服务器<br>
+      · 作者：绵<br>
+      · Mie绵的小手机工具 v2.1
+    </div></div>`;
+}
+
+function setTheme(t){
+  D.settings.theme=t;
+  document.documentElement.setAttribute('data-theme',t);
+  save();renderSettings();
+}
+function exportArchiveTxt(id){
+  const a=D.archives.find(x=>x.id===id);
+  if(!a){toast('找不到存档','e');return;}
+  // 字体不导出
+  if(a.archiveType==='font'){toast('字体存档不支持导出TXT','i');return;}
+  const content=a.content||'';
+  // 组合：名称 + 换行 + 内容
+  const txt=content;
+  const b=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const el=document.createElement('a');
+  el.href=URL.createObjectURL(b);
+  // 文件名用存档名称，去掉特殊字符
+  el.download=`${a.name.replace(/[\\/:*?"<>|]/g,'_')}.txt`;
+  el.click();URL.revokeObjectURL(el.href);
+  toast(`「${a.name}」已导出为TXT`,'s');
+}
+
+function exportBackup(){
+  const b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download=`mie-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();URL.revokeObjectURL(a.href);toast('已导出','s');
+}
+
+function importBackup(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(!Array.isArray(d.archives))throw new Error('格式错误');
+      showConfirm('导入数据',`导入 ${d.archives.length} 个存档（覆盖现有数据）？`,()=>{
+        D=d;if(!D.settings)D.settings={};if(!D.folders)D.folders=[];
+        D.settings.theme=D.settings.theme||'light';
+        D.archives.forEach(a=>{if(!a.tags)a.tags=[];if(a.folderId===undefined)a.folderId='';if(!a.archiveType)a.archiveType='text';});
+        save();setTheme(D.settings.theme);renderSettings();toast('导入成功','s');
+      },'确认导入','btn-blue');
+    }catch(err){toast('解析失败: '+err.message,'e');}
+  };
+  r.readAsText(f);e.target.value='';
+}
+
+function clearAll(){
+  showConfirm('清除全部','删除所有存档和文件夹？不可撤销。',()=>{
+    D={archives:[],folders:[],settings:{theme:D.settings.theme}};
+    save();renderArchive();toast('已清除','s');
+  });
+}
+
+// ============================================================
+// 批量压缩存档图片
+// ============================================================
+function openBatchCompress(){
+  const imgArchives=D.archives.filter(a=>a.previewImg&&a.previewImg.length>100);
+  const info=$('compress-info');
+  if(!imgArchives.length){
+    info.innerHTML=`<div style="color:var(--t3);padding:20px 0;text-align:center">📭 当前没有含效果图的存档</div>`;
+    $('compress-run-btn').style.display='none';
+  }else{
+    const totalKb=imgArchives.reduce((s,a)=>s+Math.round((a.previewImg||'').length*0.75/1024),0);
+    info.innerHTML=`<div style="padding:8px 0">
+      <div>📸 共 <strong style="color:var(--blue)">${imgArchives.length}</strong> 张效果图</div>
+      <div>📦 当前总大小约 <strong style="color:var(--orange)">${totalKb}KB</strong></div>
+      <div style="font-size:12px;color:var(--t3);margin-top:6px">压缩后直接更新存档中的图片</div>
+    </div>`;
+    $('compress-run-btn').style.display='';
+  }
+  $('compress-result').innerHTML='';
+  openSheet('ovl-compress');
+}
+
+async function runBatchCompress(){
+  const quality=parseInt($('compress-quality').value)/100;
+  const maxW=parseInt($('compress-maxw').value)||0;
+  const imgArchives=D.archives.filter(a=>a.previewImg&&a.previewImg.length>100);
+  if(!imgArchives.length){toast('没有可压缩的图片','i');return;}
+  const btn=$('compress-run-btn');
+  btn.disabled=true;btn.textContent='压缩中…';
+  let totalBefore=0,totalAfter=0,done=0;
+  const resultEl=$('compress-result');
+  for(const a of imgArchives){
+    const before=Math.round((a.previewImg||'').length*0.75/1024);
+    totalBefore+=before;
+    await new Promise(resolve=>{
+      compressB64(a.previewImg,maxW,quality,newB64=>{
+        const after=Math.round(newB64.length*0.75/1024);
+        totalAfter+=after;
+        a.previewImg=newB64;
+        done++;
+        resultEl.innerHTML=`⏳ 已处理 ${done}/${imgArchives.length} 张…`;
+        resolve();
+      });
+    });
+  }
+  save();
+  const saved=totalBefore-totalAfter;
+  resultEl.innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:10px;color:var(--green);font-weight:600">
+    ✅ 压缩完成！<br>
+    压缩前：${totalBefore}KB → 压缩后：${totalAfter}KB<br>
+    节省约 <strong>${Math.max(0,saved)}KB</strong> (${Math.round(Math.max(0,saved)/Math.max(1,totalBefore)*100)}%)
+  </div>`;
+  btn.disabled=false;btn.textContent='🗜️ 再次压缩';
+  renderSettings();
+  toast(`压缩完成，节省 ${Math.max(0,saved)}KB`,'s');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+load();
+document.documentElement.setAttribute('data-theme',D.settings.theme||'light');
+goPage('emoji');
+
+// ============================================================
+// SPLASH
+// ============================================================
+(function(){
+  const skip=localStorage.getItem('mietools_splash_skip');
+  if(skip&&Date.now()<parseInt(skip)){const s=$('splash');if(s)s.remove();return;}
+  let count=3;
+  const btn=$('splash-btn'),countEl=$('splash-count');
+  const timer=setInterval(()=>{
+    count--;
+    if(count<=0){clearInterval(timer);btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';$('splash-btn-txt').textContent='我已阅读，进入工具';}
+    else countEl.textContent=count;
+  },1000);
+})();
+
+function closeSplash(){
+  const cb=$('splash-no-remind');
+  if(cb&&cb.checked)localStorage.setItem('mietools_splash_skip',Date.now()+24*60*60*1000);
+  const s=$('splash');
+  s.style.opacity='0';s.style.transition='opacity .25s ease';
+  setTimeout(()=>s.remove(),260);
+}
+</script>
+</body>
+</html>
